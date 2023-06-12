@@ -7,7 +7,7 @@ import torch.nn as nn
 from quant import *
 
 
-torch.backends.cuda.matmul.allow_tf32 = False
+#torch.backends.cuda.matmul.allow_tf32 = False
 torch.backends.cudnn.allow_tf32 = False
 
 DEBUG = False 
