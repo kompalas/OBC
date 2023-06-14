@@ -6,7 +6,7 @@ import torch.nn as nn
 
 from quant import *
 
-
+# NOTE: Change for compatibility with torch 1.3.1
 #torch.backends.cuda.matmul.allow_tf32 = False
 torch.backends.cudnn.allow_tf32 = False
 
@@ -52,7 +52,9 @@ class TrueOBS:
 
     def invert(self, H):
         try:
-            Hinv = torch.cholesky_inverse(torch.linalg.cholesky(H))
+            #Hinv = torch.cholesky_inverse(torch.linalg.cholesky(H))
+            # NOTE: Change for compatibility with torch 1.3.1
+            Hinv = torch.cholesky_inverse(torch.cholesky(H))
         except RuntimeError:
             print('Hessian not full rank.')
             tmp = 1 * torch.eye(self.columns, device=self.dev)
@@ -311,7 +313,9 @@ class TrueOBS:
             for j, sparsity in enumerate(sparsities):
                 count = int(math.ceil(self.rows * blockcount * sparsity))
                 perrow = torch.sum(
-                    torch.div(order[:count], blockcount, rounding_mode='trunc') == i
+                    #torch.div(order[:count], blockcount, rounding_mode='trunc') == i
+                    # NOTE: Change for compatibility with torch 1.3.1
+                    torch.div(order[:count], blockcount) == i
                 ).item()
                 losses[j] += torch.sum(self.Losses[i, :(perrow + 1)]).item()
                 Ws[j][i, :] = Trace[perrow, i % parallel, :]
