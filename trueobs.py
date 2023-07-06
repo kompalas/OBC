@@ -176,7 +176,9 @@ class TrueOBS:
                 d = diag[rangecount, j]
                 w -= row * (w[rangecount, j] / d).unsqueeze(1)
                 mask[rangecount, j] = True
-                buckets[rangecount, torch.div(j, m, rounding_mode='floor'), :] += 1
+                #buckets[rangecount, torch.div(j, m, rounding_mode='floor'), :] += 1
+                # NOTE: Change for compatibility with torch 1.3.1
+                buckets[rangecount, torch.div(j, m), :] += 1
                 if zeros == self.columns * n / m:
                     break
                 row /= torch.sqrt(d).unsqueeze(1)
