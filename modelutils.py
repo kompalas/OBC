@@ -6,9 +6,10 @@ import torch
 import torch.nn as nn
 
 from quant import *
+from models import create_model
 
 
-DEV = torch.device('cuda:0')
+DEV = torch.device('cuda')
 
 
 def find_layers(module, layers=[nn.Conv2d, nn.Linear, ActQuantWrapper], name=''):
@@ -141,7 +142,7 @@ def run_yolo(model, batch, loss=False, retmoved=False):
 def run_bert(model, batch, loss=False, retmoved=False):
     dev = next(iter(model.parameters())).device
     for k, v in batch.items():
-        batch[k] = v.to(DEV)
+        batch[k] = v.to(dev)
     if retmoved:
         return batch
     out = model(**batch)
@@ -177,12 +178,8 @@ def get_bertsquad(layers=12):
     import bertsquad
     return bertsquad.get_model(layers=layers)
 
-from torchvision.models import resnet18, resnet34, resnet50, resnet101 
 
 get_models = {
-    'rn18': lambda: resnet18(pretrained=True),
-    'rn34': lambda: resnet34(pretrained=True),
-    'rn50': lambda: resnet50(pretrained=True),
     'yolov5s': lambda: get_yolo('yolov5s'),
     'yolov5m': lambda: get_yolo('yolov5m'),
     'yolov5l': lambda: get_yolo('yolov5l'),
@@ -192,8 +189,7 @@ get_models = {
 }
 
 def get_model(model):
-    model = get_models[model]()
-    model = model.to(DEV)
+    model = create_model(model)
     model.eval()
     return model
 
