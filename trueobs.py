@@ -58,7 +58,8 @@ class TrueOBS:
         except RuntimeError:
             print('Hessian not full rank.')
             tmp = 1 * torch.eye(self.columns, device=self.dev)
-            Hinv = torch.cholesky_inverse(torch.linalg.cholesky(H + tmp))
+            #Hinv = torch.cholesky_inverse(torch.linalg.cholesky(H + tmp))
+            Hinv = torch.cholesky_inverse(torch.cholesky(H + tmp))
         return Hinv
 
     def prepare(self, columnslast=False):
